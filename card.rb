@@ -11,7 +11,6 @@ class Card
     %w(Clubs Diamonds Hearts Spades)
   end
 
-
   attr_accessor :suit,
                 :face,
                 :value
@@ -33,7 +32,14 @@ class Card
   end
 
   def to_s
-    "a #{face} of #{suit}"
+    # Make the language for the cards grammatically accurate
+    if face == "Ace"
+      "an #{face} of #{suit}"
+    elsif face == "8"
+      "an #{face} of #{suit}"
+    else
+      "a #{face} of #{suit}"
+    end
   end
 
   def <=>(other)
