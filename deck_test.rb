@@ -22,7 +22,6 @@ class DeckTest < MiniTest::Test
     end
   end
 
-
   def test_four_each_face_card
     deck = Deck.new
     faces = ("2".."10").to_a + %w(Jack Queen King Ace)
@@ -30,6 +29,5 @@ class DeckTest < MiniTest::Test
       assert deck.cards.count{ |card| card.face == face } == 4
     end
   end
-
 
 end
