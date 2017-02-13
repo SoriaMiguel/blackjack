@@ -30,7 +30,7 @@ class Game
   def deal
     2.times do
       p1_hand << deck.draw
-         house_hand << deck.draw
+      house_hand << deck.draw
     end
   end
 
@@ -47,7 +47,7 @@ class Game
 
   def player_turn
     stay = false
-    until stay || bust(p1_hand)
+    until stay || bust(p1_hand) || sum(p1_hand) == 21
       choice = prompt.select("What's your move?", %W(Hit Stay))
         case choice
         when "Hit"
@@ -76,21 +76,17 @@ class Game
     sum(players) > 21
   end
 
-
   def player_hand
-    puts "You have"
+    puts "You have:"
     p1_hand.each do |card|
-      puts card
+      puts card.to_s
     end
     puts "Dealer is showing #{house_hand.last}"
+    puts "========"
   end
-
-  def player_choices
-
-  end
-
 
   def dealer_hand
+    puts "========"
     puts "Dealer has: "
     house_hand.each do |card|
       puts card
@@ -103,24 +99,40 @@ class Game
 
   def game_over
     if sum(p1_hand) == 21
-      puts "Blackjack!"
+      puts "You won with a Blackjack!"
+      play_again?
     elsif
       bust(house_hand)
-      puts "House busts. You win!"
+      puts "House busts with #{sum(house_hand)}. You win!"
+      play_again?
     elsif
       bust(p1_hand)
-      puts "You bust. Sorry."
+      puts "You busted with #{sum(p1_hand)}. Sorry."
+      play_again?
     elsif
-      sum(house_hand) > sum(p1_hand)
-      puts "House wins.  Too bad."
+      sum(house_hand) > sum(p1_hand) && !bust(house_hand)
+      puts "House wins with a hand total of #{sum(house_hand)}. Too bad."
+      play_again?
     elsif
-      sum(p1_hand) > sum(house_hand)
-      puts "You win!"
+      sum(p1_hand) > sum(house_hand) && !bust(p1_hand)
+      puts "You win with a hand total of #{sum(p1_hand)}!"
+      play_again?
     else
       sum(p1_hand) == sum(house_hand)
       puts "It's a tie! You win!"
+      play_again?
     end
   end
+
+  def play_again?
+    prompt = @prompt.yes?("Would you like to play again?")
+      if prompt
+        Game.new.play
+      else
+        puts "Thank you for playing! Please come back soon!"
+      end
+  end
+
 
 end
 
