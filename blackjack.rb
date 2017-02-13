@@ -21,83 +21,107 @@ class Game
     @deck = Deck.new
     @p1_hand = []
     @house_hand = []
-    @players = [@p1_hand, @house_hand]
-    @player_input = nil
-    @house_total = 0
-    @player_total = 0
+    # @players = [@p1_hand, @house_hand]
+    # @player_input = nil
+    # @house_total = 0
+    # @player_total = 0
   end
 
-  def deal(players)
+  def deal
     2.times do
-      players.each do players.draw
-      end
+      p1_hand << deck.draw
+         house_hand << deck.draw
     end
   end
 
   def play
-    until game_over
+    deal
+    player_hand
+    sum(p1_hand)
+    puts "Your total hand is #{sum(p1_hand)}"
+    player_turn
+    dealer_hand
+    dealer_turn
+    game_over
+  end
 
-
-      # deal house - 1st face down, second face up, player both face up
-
-      # puts "House is showing #{house_hand}. You have #{p1_hand}. Would you like to hit or stay?"
-      # player "hit" or "stay"
-      # house hits if less than 16
+  def player_turn
+    stay = false
+    until stay || bust(p1_hand)
+      choice = prompt.select("What's your move?", %W(Hit Stay))
+        case choice
+        when "Hit"
+          p1_hand << deck.draw
+          player_hand
+          puts "Your total hand is #{sum(p1_hand)}"
+        when "Stay"
+          stay = true
+          puts "You're choosing to stay."
+        end
     end
   end
+
+  def dealer_turn
+    until sum(house_hand) >= 16 || bust(p1_hand)
+      if sum(house_hand) < 16
+        house_hand << deck.draw
+        puts house_hand.last
+      else
+        puts dealer_hand
+      end
+    end
+  end
+
+  def bust(players)
+    sum(players) > 21
+  end
+
 
   def player_hand
     puts "You have"
     p1_hand.each do |card|
       puts card
     end
+    puts "Dealer is showing #{house_hand.last}"
   end
+
+  def player_choices
+
+  end
+
 
   def dealer_hand
-    # show the first card, not the second card
-    puts "House is showing #{house_hand.last}."
-
-
-
+    puts "Dealer has: "
+    house_hand.each do |card|
+      puts card
+    end
   end
 
-  def sum
-    array.inject(0){|sum,x| sum + x }
-    # needs to work for both the player hand and deealer hand.  How?  @players?d
+  def sum(players)
+    players.inject(0){|sum, card| sum + card.value}
   end
 
   def game_over
-    # need the sum of each hand in order to compare them, not the array themselves
-    if player_hand == 21
+    if sum(p1_hand) == 21
       puts "Blackjack!"
     elsif
-      house_hand > 21
+      bust(house_hand)
       puts "House busts. You win!"
     elsif
-      p1_hand > 21
+      bust(p1_hand)
       puts "You bust. Sorry."
     elsif
-      house_hand > p1_hand
+      sum(house_hand) > sum(p1_hand)
       puts "House wins.  Too bad."
     elsif
-      p1_hand > house_hand
+      sum(p1_hand) > sum(house_hand)
       puts "You win!"
     else
-      p1_hand == house_hand
+      sum(p1_hand) == sum(house_hand)
       puts "It's a tie! You win!"
     end
-    next_game
-
-
-
-
-    # player = 21 and house = 21
-    # player is 20 or less and greater than house
-    # house is 20 or less and greater than player
-
-    # Dealer had #{dealer_hand}
-    # include a new deck once game is over
   end
 
-
 end
+
+Game.new.play
